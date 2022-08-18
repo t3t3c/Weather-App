@@ -39,6 +39,22 @@ class UI {
       display.innerText += ` ${information}`;
     }
   }
+
+  static async displayGif(input) {
+    try {
+      const display = document.querySelector('.display');
+      const img = document.createElement('img');
+      const response = await fetch(
+        `https://api.giphy.com/v1/gifs/translate?api_key=Qzz0xN1HK9JfOpgajfm8CWKCVfdnYPtI&s=${input}`,
+        { mode: 'cors' }
+      );
+      const data = await response.json();
+      img.src = data.data.images.original.url;
+      display.appendChild(img);
+    } catch (error) {
+      console.log('error');
+    }
+  }
 }
 
 class Storage {}
@@ -59,10 +75,14 @@ async function getWeather(city) {
     );
     const weatherToday = await response.json();
     await new Promise((resolve) => setTimeout(resolve, 1000));
+    console.log(weatherToday);
     UI.display(
       weatherToday.name,
-      `${toCelsius(weatherToday.main.temp).toFixed()} degrees`
+      `${toCelsius(weatherToday.main.temp).toFixed()} degrees`,
+      '\n',
+      weatherToday.weather[0].description
     );
+    UI.displayGif(weatherToday.weather[0].description);
   } catch (error) {
     UI.display(`I can't find city named ${city}
     `);
@@ -80,14 +100,3 @@ document.addEventListener('submit', (event) => {
 });
 
 UI.createForm();
-
-// DELETE LATER!:
-
-function tryTest() {
-  try {
-    fetch('not working fetch');
-  } catch (error) {
-    console.log('error');
-  }
-}
-tryTest();
