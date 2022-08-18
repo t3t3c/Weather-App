@@ -59,30 +59,37 @@ class UI {
 
 class Storage {}
 
-class Weather {
-  constructor(cityName, degrees) {
-    this.cityName = cityName;
+class CityWeather {
+  constructor(name, degrees, weather) {
+    this.name = name;
     this.degrees = degrees;
+    this.weather = weather;
   }
-  static;
 }
 
 async function getWeather(city) {
   try {
     UI.display('Loading data');
+    // Load data
     const response = await fetch(
       `https://api.openweathermap.org/data/2.5/weather?q=${city}&APPID=b5438f36d7a5a5bea321ad89a86f6a8c`
     );
     const weatherToday = await response.json();
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log(weatherToday);
-    UI.display(
+    // arrange data:
+    const currentCity = new CityWeather(
       weatherToday.name,
-      `${toCelsius(weatherToday.main.temp).toFixed()} degrees`,
-      '\n',
+      toCelsius(weatherToday.main.temp).toFixed(),
       weatherToday.weather[0].description
     );
-    UI.displayGif(weatherToday.weather[0].description);
+    // display data
+    UI.display(
+      currentCity.name,
+      `${currentCity.degrees} degrees`,
+      '\n',
+      currentCity.weather
+    );
+    UI.displayGif(currentCity.weather);
   } catch (error) {
     UI.display(`I can't find city named ${city}
     `);
